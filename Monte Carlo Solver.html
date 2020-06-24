@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Monte Carlo Solver</title>
+</head>
+<body>
+
+<h1>Monte-Carlo Solver</h1>
+<p>Praktikum Pemodelan & Simulasi Sistem</p>
+<hr>
+
+
+<button onclick="add_row_data()">(+) tambah data</button>
+<button onclick="del_row_data()">(-) kurang data</button>
+<br><br>
+<div id="data_container">
+	<div class="row_data">
+		<span>Permintaan: </span><input type="text" name="permintaan" style="width: 35px;" value="20">
+		<span>Frekuensi: </span><input type="text" name="frekuensi" style="width: 35px;" value="10">
+	</div>
+</div>
+
+
+<br><br>
+<span>Selama: </span><input type="text" name="periode" style="width: 32px" value="15"><span> (hari/bulan/tahun)</span>
+<br><br>
+<button onclick="bangkitkan()">Hitung</button>
+<br><br>
+
+<textarea id="hasil" cols="50" rows="10"></textarea>
+<p>Total permintaan: <span id="total_permintaan"></span></p>
+<p>Total frekuensi: <span id="total_frekuensi"></span></p>
+<p>Rata-rata permintaan selama <span id="periode"></span> (hari/bulan/tahun) : <span id="rata_rata_waktu"></span></p>
+
+
+<script>
+function add_row_data() {
+	var elem = document.getElementsByClassName("row_data")[0]
+	var cloned = elem.cloneNode(true)
+	document.querySelector("#data_container").appendChild(cloned)
+}
+
+function del_row_data() {
+	var elem = document.querySelector("#data_container")
+	elem.removeChild(elem.lastChild)
+}
+
+function hitung_total_frekuensi() {
+	var total_frekuensi = 0
+	var elem = document.getElementsByName("frekuensi")
+
+	for (var i = 0; i < elem.length; i++) {
+		total_frekuensi += parseFloat(elem[i].value)
+	}
+	return total_frekuensi
+}
+
+function hitung_dist_freq() {
+	var total_frekuensi = hitung_total_frekuensi()
+	var elem = document.getElementsByName("frekuensi")
+	var dis_freq = []
+
+	for (var i = 0; i < elem.length; i++) {
+		 dis_freq[i] = elem[i].value / total_frekuensi
+	}
+	return dis_freq
+}
+
+function hitung_dist_kum() {
+	var dis_freq = hitung_dist_freq()
+	var dis_kum = [dis_freq[0]]
+
+	for (var i = 1; i < dis_freq.length; i++) {
+		 dis_kum[i] = dis_kum[i-1] + dis_freq[i]
+	}
+	return dis_kum
+}
+
+function hitung_pre_inv() {
+	var total_frekuensi = hitung_total_frekuensi()
+	var dis_kum = hitung_dist_kum()
+	var pre_inv = []
+
+	for (var i = 0; i < dis_kum.length; i++) {
+		pre_inv[i] = dis_kum[i] * total_frekuensi
+	}
+	return pre_inv
+}
+
+function hitung_inv() {
+	var pre_inv = hitung_pre_inv()
+	var inv = []
+
+	for (var i = 0; i < pre_inv.length; i++) {
+		if (i == 0) {
+			var data = {"min":0, "max":pre_inv[i]}
+		}else{
+			var data = {"min":(pre_inv[i-1]+1), "max":pre_inv[i]}
+		}
+		inv[i] = data
+	}
+	return inv
+}
+
+
+function bangkitkan() {
+	document.querySelector("#hasil").innerHTML = ""
+
+	var inv = hitung_inv()
+	var periode = parseFloat(document.getElementsByName("periode")[0].value)
+	var bottom_num = inv[0].min
+	var upper_num = inv[inv.length - 1].max
+	var total_permintaan = 0
+
+	var counter = 1
+	for (var i = 0; i < periode; i++) {
+		var rand_num = Math.floor(Math.random() * (upper_num - bottom_num) + bottom_num)
+
+		for (var j = 0; j < inv.length; j++) {
+			if (rand_num >= inv[j].min && rand_num <= inv[j].max) {
+				var linked = parseFloat(document.getElementsByName("permintaan")[j].value)
+			}
+		}
+		total_permintaan += linked
+
+		var baris = counter+". data-acak:"+rand_num+" | permintaan:"+linked+'\n'
+		document.querySelector("#hasil").innerHTML += baris
+		counter++
+	}
+
+	document.getElementById("total_frekuensi").innerHTML = hitung_total_frekuensi()
+	document.getElementById("total_permintaan").innerHTML = total_permintaan
+	document.getElementById("periode").innerHTML = periode
+	document.getElementById("rata_rata_waktu").innerHTML = Math.floor(total_permintaan / periode)
+
+}
+
+
+</script>
+
+</body>
+</html>

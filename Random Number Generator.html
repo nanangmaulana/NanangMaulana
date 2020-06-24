@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Random Number Generator</title>
+</head>
+<body>
+
+<h1>Random Number Generator</h1>
+<p>Praktikum Pemodelan & Simulasi Sistem</p>
+<hr>
+
+<select name="metode" required>
+	<option value="">-- pilih metode --</option>
+	<option value="1">Linear Congruential</option>
+	<option value="2">Multiplicative</option>
+</select>
+<br><br>
+<p><span>Variabel a: </span><input type="text" name="nil_a" style="width: 29px" value="4"></p>
+<p><span>Variabel c: </span><input type="text" name="nil_c" style="width: 29px" value="7"></p>
+<p><span>Variabel m: </span><input type="text" name="nil_m" style="width: 29px" value="15"></p>
+<p><span>Variabel Z0: </span><input type="text" name="nil_z0" style="width: 29px" value="3"> </p>
+<p><span>Berapa kali: </span><input type="text" name="nil_n" style="width: 29px" value="10"></p>
+
+<p><button onclick="bangkitkan()">Hitung</button></p>
+
+<textarea id="hasil" cols="50" rows="10"></textarea>
+
+<script>
+function bangkitkan() {
+	var e = document.getElementsByName("metode")[0]
+	var metode_pilihan = e.options[e.selectedIndex].value
+
+	if (metode_pilihan == 1) {
+		hitung_lcg()
+	}else if (metode_pilihan == 2) {
+		hitung_mul()
+	}else{
+		alert("Pilih metode")
+	}
+}
+
+function hitung_lcg() {
+	document.querySelector("#hasil").innerHTML = ""
+
+	var nil_a = parseFloat(document.getElementsByName("nil_a")[0].value)
+	var nil_c = parseFloat(document.getElementsByName("nil_c")[0].value)
+	var nil_m = parseFloat(document.getElementsByName("nil_m")[0].value)
+	var nil_z0 = parseFloat(document.getElementsByName("nil_z0")[0].value)
+	var nil_n = parseFloat(document.getElementsByName("nil_n")[0].value)
+
+	var rand = []
+	var zi = []
+	zi[0] = nil_z0
+	var ui = []
+
+	for (var i = 1; i <= nil_n; i++) {
+		rand[i] = (nil_a * zi[i-1]) + nil_c
+		zi[i] = rand[i] % nil_m
+		ui[i] = zi[i] / nil_m
+
+		console.log(i+".", rand[i], zi[i], ui[i])
+		var baris = i+". "+rand[i]+" | "+zi[i]+" | "+ui[i]+'\n'
+		document.querySelector("#hasil").innerHTML += baris
+	}
+}
+
+function hitung_mul() {
+	document.querySelector("#hasil").innerHTML = ""
+
+	var nil_a = parseFloat(document.getElementsByName("nil_a")[0].value)
+	var nil_m = parseFloat(document.getElementsByName("nil_m")[0].value)
+	var nil_z0 = parseFloat(document.getElementsByName("nil_z0")[0].value)
+	var nil_n = parseFloat(document.getElementsByName("nil_n")[0].value)
+
+	var rand = []
+	var zi = []
+	zi[0] = nil_z0
+	var ui = []
+
+	for (var i = 1; i <= nil_n; i++) {
+		rand[i] = (nil_a * zi[i-1])
+		zi[i] = rand[i] % nil_m
+		ui[i] = zi[i] / nil_m
+
+		console.log(i+".", rand[i], zi[i], ui[i])
+		var baris = i+". "+rand[i]+" | "+zi[i]+" | "+ui[i]+'\n'
+		document.querySelector("#hasil").innerHTML += baris
+	}
+}
+
+</script>
+
+</body>
+</html>
